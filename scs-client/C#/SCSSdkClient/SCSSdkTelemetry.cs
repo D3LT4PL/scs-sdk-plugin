@@ -2,8 +2,17 @@
 using System.Threading;
 using SCSSdkClient.Object;
 
-//TODO: possible idea: check if ets is running and if not change update rate to infinity (why most of the user may not quit the application while ets is running)
 namespace SCSSdkClient {
+    /// <summary>
+    ///     Data Event
+    ///     
+    ///     The parameter **newTimeStamp** is deprecated and will be removed in a future release.
+    /// 
+    /// </summary>
+    /// 
+    /// 
+    /// <param name="data">All data of the telemetry</param>
+    /// <param name="newTimestamp">Flag if the data changed</param>
     public delegate void TelemetryData(SCSTelemetry data, bool newTimestamp);
 
     /// <summary>
@@ -35,11 +44,9 @@ namespace SCSSdkClient {
 
 #endif
 
-
         private SharedMemory SharedMemory;
 
         private bool wasOnJob;
-        private bool wasConnected;
         private bool cancelled;
         private bool delivered;
         private bool fined;
@@ -119,12 +126,14 @@ namespace SCSSdkClient {
 
         private void _updateTimer_Elapsed(object sender) {
             var scsTelemetry = SharedMemory.Update<SCSTelemetry>();
+
             // check if sdk is NOT running
             if (!scsTelemetry.SdkActive && !paused) {
                 // if so don't check so often the data 
                 var tsInterval = new TimeSpan(0, 0, 0, 0, DefaultPausedUpdateInterval);
                 _updateTimer.Change(tsInterval.Add(tsInterval), tsInterval);
                 paused = true;
+
                 // if sdk not active we don't need to do something
                 return;
             }
@@ -137,6 +146,7 @@ namespace SCSSdkClient {
 
             var time = scsTelemetry.Timestamp;
             var updated = false;
+
             if (time != lastTime || wasPaused != scsTelemetry.Paused) {
                 // time changed or game state change -> update data
                 Data?.Invoke(scsTelemetry, true);
@@ -161,68 +171,65 @@ namespace SCSSdkClient {
 
             if (cancelled != scsTelemetry.SpecialEventsValues.JobCancelled) {
                 cancelled = scsTelemetry.SpecialEventsValues.JobCancelled;
-                if (cancelled) {
-                    if (!updated) {
-                        Data?.Invoke(scsTelemetry, true);
-                        updated = true;
-                    }
 
-                    JobCancelled?.Invoke(this, new EventArgs());
+                if (!updated) {
+                    Data?.Invoke(scsTelemetry, true);
+                    updated = true;
                 }
+
+                JobCancelled?.Invoke(this, new EventArgs());
             }
 
             if (delivered != scsTelemetry.SpecialEventsValues.JobDelivered) {
                 delivered = scsTelemetry.SpecialEventsValues.JobDelivered;
-                if (delivered) {
-                    if (!updated) {
-                        Data?.Invoke(scsTelemetry, true);
-                        updated = true;
-                    }
-
-                    JobDelivered?.Invoke(this, new EventArgs());
+               
+                if (!updated) {
+                    Data?.Invoke(scsTelemetry, true);
+                    updated = true;
                 }
+
+                JobDelivered?.Invoke(this, new EventArgs());          
             }
 
             if (fined != scsTelemetry.SpecialEventsValues.Fined) {
                 fined = scsTelemetry.SpecialEventsValues.Fined;
-                if (fined) {
-                    Fined?.Invoke(this, new EventArgs());
-                }
+                
+                Fined?.Invoke(this, new EventArgs());            
             }
 
             if (tollgate != scsTelemetry.SpecialEventsValues.Tollgate) {
                 tollgate = scsTelemetry.SpecialEventsValues.Tollgate;
-                if (tollgate) {
-                    Tollgate?.Invoke(this, new EventArgs());
-                }
+
+                
+                Tollgate?.Invoke(this, new EventArgs());
+                
             }
 
             if (ferry != scsTelemetry.SpecialEventsValues.Ferry) {
                 ferry = scsTelemetry.SpecialEventsValues.Ferry;
-                if (ferry) {
-                    if (!updated) {
-                        Data?.Invoke(scsTelemetry, true);
-                        updated = true;
-                    }
-
-                    Ferry?.Invoke(this, new EventArgs());
+                
+                if (!updated) {
+                    Data?.Invoke(scsTelemetry, true);
+                    updated = true;
                 }
+
+                Ferry?.Invoke(this, new EventArgs());               
             }
 
             if (train != scsTelemetry.SpecialEventsValues.Train) {
                 train = scsTelemetry.SpecialEventsValues.Train;
-                if (train) {
-                    if (!updated) {
-                        Data?.Invoke(scsTelemetry, true);
-                        updated = true;
-                    }
-
-                    Train?.Invoke(this, new EventArgs());
+                
+                if (!updated) {
+                    Data?.Invoke(scsTelemetry, true);
+                    updated = true;
                 }
+
+                Train?.Invoke(this, new EventArgs());
             }
 
             if (refuel != scsTelemetry.SpecialEventsValues.Refuel) {
                 refuel = scsTelemetry.SpecialEventsValues.Refuel;
+
                 if (scsTelemetry.SpecialEventsValues.Refuel) {
                     RefuelStart?.Invoke(this, new EventArgs());
                 } else {
@@ -232,6 +239,7 @@ namespace SCSSdkClient {
 
             if (refuelPayed != scsTelemetry.SpecialEventsValues.RefuelPayed) {
                 refuelPayed = scsTelemetry.SpecialEventsValues.RefuelPayed;
+
                 if (scsTelemetry.SpecialEventsValues.RefuelPayed) {
                     RefuelPayed?.Invoke(this, new EventArgs());
                 }
