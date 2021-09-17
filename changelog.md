@@ -1,5 +1,21 @@
 # Changelog
 
+## Rev 11 (coming early due to some changes)
+
+### Important Changes
+
+- most of the flags for events will now be flip indicator. 
+  - Old Way: true -> event fires, after short time flag is changed to false
+  - New Way: state change -> event fires, state unchange -> no event
+- so the event itself does not change, however, the indicator flag change
+
+### Other things
+
+- some minor code changes
+- rev change to 11
+- changes from **Rev Pre 11**
+- `newTimestamp` of the `TelemetryData`-Event is deprecated and will be removed in a later release 
+
 ## Rev Pre 11
 
 - update .net Version to 4.8

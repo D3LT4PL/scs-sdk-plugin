@@ -62,7 +62,7 @@ scs_log_t game_log = nullptr;
 
 // use for values
 // char buff[100];
-// snprintf(buff, sizeof(buff), "%f", value->value_dplacement.position.x);	 
+// snprintf(buff, sizeof(buff), "%f", value->value_dplacement.position.x);
 // log_line(SCS_LOG_TYPE_warning, buff);
 
 // Function: log_line
@@ -379,7 +379,7 @@ void set_job_values_zero() {
 }
 
 // Function: set_trailer_values_zero
-// set every trailer value 0/empty string 
+// set every trailer value 0/empty string
 void set_trailer_values_zero(unsigned int trailer_id = 0) {
     //(&telemetryPtr->trailer.trailer[trailer_id])->~scsTrailer_t();
     new(&telemetryPtr->trailer.trailer[trailer_id]) scsTrailer_t();
@@ -446,31 +446,32 @@ SCSAPI_VOID telemetry_frame_start(const scs_event_t UNUSED(event), const void* c
 
         // check fuel value
         current_fuel_value = telemetryPtr->truck_f.fuel;
- 
+
         if(!refuel) {
             start_fuel = fuel_tmp;
             fuel_tmp = telemetryPtr->truck_f.fuel;
         }
+
         if (current_fuel_value > last_fuel_value && last_fuel_value > 0) {
             fuel_ticker2 = 0;
             telemetryPtr->special_b.refuel = true;
-            if(!refuel) {                
+            if(!refuel) {
                 refuel = true;
                 clearRefuelPayedTicker = 0;
-                
+
             }
         }else if (current_fuel_value < last_fuel_value) {
             fuel_ticker2 = 0;
             telemetryPtr->special_b.refuel = false;
         }
 
-        // refuel is true, but engine is now active? than refuel is finished and payed, fire event   
+        // refuel is true, but engine is now active? than refuel is finished and payed, fire event
         if(refuel && telemetryPtr->truck_b.engineEnabled) {
             refuel = false;
 
             telemetryPtr->gameplay_f.refuelAmount = telemetryPtr->truck_f.fuel - start_fuel;
             telemetryPtr->special_b.refuelPayed = true;
-            
+
         }
 
         // update last value every few ticks (refuel rate is not constant and the plugin side did check every 25 ms so to try a
@@ -480,20 +481,20 @@ SCSAPI_VOID telemetry_frame_start(const scs_event_t UNUSED(event), const void* c
 
             if (current_fuel_value == last_fuel_value) {
                 fuel_ticker2++;
-            }
-            else {
+            } else {
                 fuel_ticker2 = 0;
             }
+
             if (fuel_ticker2 >= 5) {
                 fuel_ticker2 = 0;
                 telemetryPtr->special_b.refuel = false;
             }
-           
         }
+
         fuel_ticker++;
         last_fuel_value = current_fuel_value;
-       
-         
+
+
         //TODO: better way for that mess here
         if (telemetryPtr->special_b.jobFinished) {
             clearJobTicker++;
@@ -563,7 +564,6 @@ SCSAPI_VOID telemetry_frame_start(const scs_event_t UNUSED(event), const void* c
             }
         }
     }
-
 }
 
 // Function: telemetry_pause
@@ -653,7 +653,7 @@ SCSAPI_VOID telemetry_configuration(const scs_event_t UNUSED(event), const void*
                                     scs_context_t UNUSED(context)) {
     // On configuration change, this function is called.
     const auto info = static_cast<const scs_telemetry_configuration_t *>(
-        // TODO: DELETE ENTRIES WHEN CALLED SO NO VALUE IS THERE to avoid wrong values when changes occur but not in arrays up to that slot or so 
+        // TODO: DELETE ENTRIES WHEN CALLED SO NO VALUE IS THERE to avoid wrong values when changes occur but not in arrays up to that slot or so
         event_info);
     unsigned int trailer_id = 0;
     // check which type the event has
@@ -709,10 +709,10 @@ SCSAPI_VOID telemetry_configuration(const scs_event_t UNUSED(event), const void*
     }
 
     // uncomment to log every config, should work but with function not tested ^^`
-    // log_configs(info); 
+    // log_configs(info);
 
     // attribute is a pointer array that is never null so ... i have no clue how to check it on another way than this
-    // if for loop can't loop it is empty so simple 
+    // if for loop can't loop it is empty so simple
     auto is_empty = true;
 
     for (auto current = info->attributes; current->name; ++current) {
@@ -842,7 +842,7 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t UNUSED(event), const void* con
 SCSAPI_RESULT scs_telemetry_init(const scs_u32_t version, const scs_telemetry_init_params_t* const params) {
 
     // We currently support only two version.
-    //TODO test this first test seems to work 
+    //TODO test this first test seems to work
     const scs_telemetry_init_params_v100_t* version_params;
     if (version == SCS_TELEMETRY_VERSION_1_00) {
         version_params = (const scs_telemetry_init_params_v100_t*)params;
@@ -883,7 +883,7 @@ SCSAPI_RESULT scs_telemetry_init(const scs_u32_t version, const scs_telemetry_in
     telemetryPtr->scs_values.version_major = SCS_GET_MAJOR_VERSION(version_params->common.game_version);
     telemetryPtr->scs_values.version_minor = SCS_GET_MINOR_VERSION(version_params->common.game_version);
 
-    // Set Game ID 
+    // Set Game ID
     if (strcmp(version_params->common.game_id, SCS_GAME_ID_EUT2) == 0) {
         telemetryPtr->scs_values.game = ETS2;
         telemetryPtr->scs_values.telemetry_version_game_major = SCS_GET_MAJOR_VERSION(
