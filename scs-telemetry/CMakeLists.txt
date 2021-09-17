@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(scs-telemetry)
+project(scs-telemetry VERSION 2.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -10,14 +10,10 @@ endif()
 include_directories("../scs_sdk/include")
 include_directories("inc")
 
+file(GLOB scs-telemetry-SRC
+        "src/*.cpp"
+        "inc/*.h"
+        "inc/*.hpp")
+
 add_library(scs-telemetry SHARED scs-telemetry.def
-        inc/log.hpp
-        inc/scs-telemetry-common.hpp
-        inc/scs_config_handlers.hpp
-        inc/scs_gameplay_event_handlers.hpp
-        inc/tcp_server.hpp
-        src/log.cpp
-        src/scs_config_handlers.cpp
-        src/scs_gameplay_event_handlers.cpp
-        src/scs_telemetry.cpp
-        src/tcp_server.cpp)
+        ${scs-telemetry-SRC})
