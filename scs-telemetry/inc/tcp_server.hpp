@@ -36,6 +36,7 @@ public:
     int srv = -1;
 #endif
     bool finish = false;
+    bool finished = false;
 
 public:
     explicit TcpServer(scs_log_t logger_);
@@ -45,7 +46,7 @@ public:
     void broadcast(const char *data, int dataSize) const;
 
 private:
-    void acceptLoop() const;
+    void acceptLoop();
     void logInfo(const std::string& msg) const;
     void logWarn(const std::string& msg) const;
     void logErr(const std::string& msg) const;

@@ -32,6 +32,8 @@ TcpServer::~TcpServer() {
 #endif
 
     delete clients;
+
+    while (!finished);
 }
 
 bool TcpServer::init() {
@@ -150,7 +152,7 @@ void TcpServer::broadcast(const char *data, int dataSize) const {
     }
 }
 
-void TcpServer::acceptLoop() const {
+void TcpServer::acceptLoop() {
     while (!finish) {
 #ifdef WIN32
         auto s = accept(srv, nullptr, nullptr);
@@ -179,6 +181,8 @@ void TcpServer::acceptLoop() const {
         logInfo("Connection accepted");
         clients->insert(s);
     }
+
+    finished = true;
 }
 
 void TcpServer::logInfo(const std::string &msg) const {
