@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(scs-telemetry VERSION 2.0.0)
+project(scs-telemetry VERSION 12.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
