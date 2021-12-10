@@ -81,7 +81,13 @@ bool TcpServer::init() {
     }
 
     int opt = 1;
-    if (setsockopt(srv, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+#ifdef __APPLE__
+    int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+#else
+    int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))
+#endif
+
+    if (ret) {
         logErr("Error setting socket options: " + std::to_string(errno));
         close(srv);
         return false;
@@ -154,8 +160,15 @@ void TcpServer::broadcast(const char *data, int dataSize) const {
 
 void TcpServer::acceptLoop() {
     while (!finish) {
-#ifdef WIN32
+#if defined(__APPLE__) || defined(WIN32)
         auto s = accept(srv, nullptr, nullptr);
+#elif defined(__linux__)
+        auto s = accept4(srv, nullptr, nullptr, SOCK_NONBLOCK);
+#else
+#error "Unknown architecture."
+#endif
+
+#ifdef WIN32
         if (s == INVALID_SOCKET) {
             auto code = WSAGetLastError();
             if (code == WSAEINTR) {
@@ -166,7 +179,6 @@ void TcpServer::acceptLoop() {
             break;
         }
 #else
-      auto s = accept4(srv, nullptr, nullptr, SOCK_NONBLOCK);
         if (s < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             continue;
