@@ -84,7 +84,7 @@ bool TcpServer::init() {
 #ifdef __APPLE__
     int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 #else
-    int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))
+    int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
 #endif
 
     if (ret) {
