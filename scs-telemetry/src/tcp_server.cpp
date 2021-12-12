@@ -1,6 +1,7 @@
 #include "tcp_server.hpp"
+#include "log.hpp"
 
-TcpServer::TcpServer(scs_log_t logger_) : logger(logger_) {
+TcpServer::TcpServer(Log *loggerImpl) : logger(loggerImpl) {
 #ifdef WIN32
     clients = new std::set<SOCKET>;
 #else
@@ -37,7 +38,7 @@ TcpServer::~TcpServer() {
 }
 
 bool TcpServer::init() {
-    logInfo("Starting TCP server");
+    logger->info("Starting TCP server");
 
     sockaddr_in service{};
     service.sin_family = AF_INET;
@@ -49,26 +50,26 @@ bool TcpServer::init() {
 
     auto res = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (res != NO_ERROR) {
-        logErr("WSAStartup error: " + std::to_string(res));
+        logger->error("WSAStartup error", res);
         return false;
     }
 
     srv = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (srv == INVALID_SOCKET) {
-        logErr("Error creating socket: " + std::to_string(WSAGetLastError()));
+        logger->error("error creating socket", WSAGetLastError());
         WSACleanup();
         return false;
     }
 
     if (bind(srv, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR) {
-        logErr("Error binding socket: " + std::to_string(WSAGetLastError()));
+        logger->error("error binding socket", WSAGetLastError());
         closesocket(srv);
         WSACleanup();
         return false;
     }
 
     if (listen(srv, 5) == SOCKET_ERROR) {
-        logErr("Error listening: " + std::to_string(WSAGetLastError()));
+        logger->error("error listening", WSAGetLastError());
         closesocket(srv);
         WSACleanup();
         return false;
@@ -76,7 +77,7 @@ bool TcpServer::init() {
 #else
     srv = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (srv <= 0) {
-        logErr("Error creating socket: " + std::to_string(errno));
+        logger->error("Error creating socket", errno);
         return false;
     }
 
@@ -88,19 +89,19 @@ bool TcpServer::init() {
 #endif
 
     if (ret) {
-        logErr("Error setting socket options: " + std::to_string(errno));
+        logger->error("Error setting socket options", errno);
         close(srv);
         return false;
     }
 
     if (bind(srv, (struct sockaddr*)&service, sizeof(service)) < 0) {
-        logErr("Error binding socket: " + std::to_string(errno));
+        logger->error("Error binding socket", errno);
         close(srv);
         return false;
     }
 
     if (listen(srv, 5) < 0) {
-        logErr("Error listening: " + std::to_string(errno));
+        logger->error("Error listening", errno);
         close(srv);
         return false;
     }
@@ -122,24 +123,24 @@ void TcpServer::broadcast(const char *data, int dataSize) const {
     for (auto sock: *clients) {
 #ifdef WIN32
         if (send(sock, (char*)&dataSize, sizeof(dataSize), 0) == SOCKET_ERROR) {
-            logWarn("Error sending: " + std::to_string(WSAGetLastError()));
+            logger->warn("error sending", WSAGetLastError());
             toRemove.insert(sock);
             continue;
         }
 
         if (send(sock, data, dataSize, 0) == SOCKET_ERROR) {
-            logWarn("Error sending: " + std::to_string(WSAGetLastError()));
+            logger->warn("error sending", WSAGetLastError());
             toRemove.insert(sock);
         }
 #else
         if (send(sock, (char*)&dataSize, sizeof(dataSize), MSG_NOSIGNAL) < 0) {
-            logWarn("Error sending: " + std::to_string(errno));
+            logger->warn("Error sending", errno);
             toRemove.insert(sock);
             continue;
         }
 
         if (send(sock, data, dataSize, MSG_NOSIGNAL) < 0) {
-            logWarn("Error sending: " + std::to_string(errno));
+            logger->warn("Error sending", errno);
             toRemove.insert(sock);
         }
 #endif
@@ -172,9 +173,9 @@ void TcpServer::acceptLoop() {
         if (s == INVALID_SOCKET) {
             auto code = WSAGetLastError();
             if (code == WSAEINTR) {
-                logInfo("Finishing accepting thread");
+                logger->info("Finishing accepting thread");
             } else {
-                logWarn("Accept failed: " + std::to_string(code));
+                logger->error("Accept failed", code);
             }
             break;
         }
@@ -185,26 +186,15 @@ void TcpServer::acceptLoop() {
         }
 
         if (s < 0) {
-            logErr("Accept failed: " + std::to_string(errno));
+            logger->error("Accept failed", errno);
             break;
         }
 #endif
 
-        logInfo("Connection accepted");
+        logger->info("Connection accepted");
         clients->insert(s);
     }
 
     finished = true;
 }
 
-void TcpServer::logInfo(const std::string &msg) const {
-    logger(SCS_LOG_TYPE_message, msg.c_str());
-}
-
-void TcpServer::logWarn(const std::string &msg) const {
-    logger(SCS_LOG_TYPE_warning, msg.c_str());
-}
-
-void TcpServer::logErr(const std::string &msg) const {
-    logger(SCS_LOG_TYPE_error, msg.c_str());
-}

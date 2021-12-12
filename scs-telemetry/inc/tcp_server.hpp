@@ -9,9 +9,12 @@
 
 #include <scssdk.h>
 
+#include "log.hpp"
+
 #if WIN32
 
 #include <winsock.h>
+
 #pragma comment(lib, "Ws2_32.lib")
 
 #else
@@ -39,7 +42,7 @@ public:
     bool finished = false;
 
 public:
-    explicit TcpServer(scs_log_t logger_);
+    explicit TcpServer(Log *loggerImpl);
     ~TcpServer();
 
     bool init();
@@ -47,11 +50,7 @@ public:
 
 private:
     void acceptLoop();
-    void logInfo(const std::string& msg) const;
-    void logWarn(const std::string& msg) const;
-    void logErr(const std::string& msg) const;
-
-    scs_log_t logger = nullptr;
+    Log *logger;
 };
 
 #endif //SCS_TELEMETRY_TCP_SERVER_HPP

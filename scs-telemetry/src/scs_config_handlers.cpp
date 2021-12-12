@@ -4,8 +4,6 @@
 // Plug-in
 #include "scs-telemetry-common.hpp"
 
-#include "log.hpp" 
-
 extern scsTelemetryMap_t* telemetryPtr;
 #pragma region scsConfigHandler_t[]
 

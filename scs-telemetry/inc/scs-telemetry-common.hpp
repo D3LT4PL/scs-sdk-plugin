@@ -4,7 +4,7 @@
 
 // This file contains "Common definitions" for this ETS2 telemetry plug-in.
 // This includes:
-// - Debug logging detail options
+// - debug logging detail options
 // - [..]
 
 #define PLUGIN_REVID					11
@@ -12,12 +12,6 @@
 #define ETS2                            1
 #define ATS                             2
 #define UnknownGame                     0
-
-#define ETS2_PLUGIN_LOGGING_ON				0
-
-#if ETS2_PLUGIN_LOGGING_ON == 1
-#define SDK_ENABLE_LOGGING
-#endif
 
 #ifdef WIN32
 #define COPY(destination, source, count) strncpy_s(destination, source, count)
@@ -44,8 +38,6 @@ bool check_min_version(unsigned int min_ets2, unsigned int min_ats);
 bool check_max_version(unsigned int min_ets2, unsigned int min_ats);
 enum configType { substances, controls, hshifter, truck, trailer, job };
 enum gameplayType { cancelled, delivered, fined, tollgate, ferry, train };
-void log_line(scs_log_type_t type, const char* text, ...);
-void log_line(const char* text, ...);
 
 typedef struct scsTrailer_s { // Size: 1552
 	//----- START OF FIRST ZONE AT OFFSET 0 -----//
