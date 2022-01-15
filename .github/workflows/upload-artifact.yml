@@ -1,7 +1,7 @@
-name: Release Artifact Build Test
+name: Release Artifact Upload
 
 on:
-  pull_request:
+  push:
     branches: [ master, dev ]
 
 env:
@@ -35,5 +35,26 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}      
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}:
+
+    - name: Upload artifact (Linux)
+      if: ${{ matrix.os == 'linux-latest' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: libscs-telemetry.so
+        path: ${{github.workspace}}/build/libscs-telemetry.so
+
+    - name: Upload artifact (MacOS)
+      if: ${{ matrix.os == 'macos-latest' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: libscs-telemetry.dylib
+        path: ${{github.workspace}}/build/libscs-telemetry.dylib
+
+    - name: Upload artifact (Windows)
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: scs-telemetry.dll
+        path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/scs-telemetry.dll
 
