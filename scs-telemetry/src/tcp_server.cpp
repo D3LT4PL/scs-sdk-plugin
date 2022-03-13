@@ -25,7 +25,7 @@ TcpServer::~TcpServer() {
 #else
     shutdown(srv, SHUT_RDWR);
 
-    for (auto sock: *clients){
+    for (auto sock: *clients) {
         close(sock);
     }
 
@@ -34,7 +34,7 @@ TcpServer::~TcpServer() {
 
     delete clients;
 
-    while (!finished);
+    while (!finished){};
 }
 
 bool TcpServer::init() {
@@ -61,7 +61,7 @@ bool TcpServer::init() {
         return false;
     }
 
-    if (bind(srv, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR) {
+    if (bind(srv, reinterpret_cast<SOCKADDR*>(&service), sizeof(service)) == SOCKET_ERROR) {
         logger->error("error binding socket", WSAGetLastError());
         closesocket(srv);
         WSACleanup();
@@ -85,7 +85,11 @@ bool TcpServer::init() {
 #ifdef __APPLE__
     int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 #else
-    int ret = setsockopt(srv, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+    int ret = setsockopt(
+        srv, SOL_SOCKET,
+        SO_REUSEADDR | SO_REUSEPORT,
+        &opt,
+        sizeof(opt));
 #endif
 
     if (ret) {
@@ -122,7 +126,7 @@ void TcpServer::broadcast(const char *data, int dataSize) const {
 
     for (auto sock: *clients) {
 #ifdef WIN32
-        if (send(sock, (char*)&dataSize, sizeof(dataSize), 0) == SOCKET_ERROR) {
+        if (send(sock, reinterpret_cast<char*>(&dataSize), sizeof(dataSize), 0) == SOCKET_ERROR) {
             logger->warn("error sending", WSAGetLastError());
             toRemove.insert(sock);
             continue;
@@ -133,7 +137,7 @@ void TcpServer::broadcast(const char *data, int dataSize) const {
             toRemove.insert(sock);
         }
 #else
-        if (send(sock, (char*)&dataSize, sizeof(dataSize), MSG_NOSIGNAL) < 0) {
+        if (send(sock, reinterpret_cast<char*>(&dataSize), sizeof(dataSize), MSG_NOSIGNAL) < 0) {
             logger->warn("Error sending", errno);
             toRemove.insert(sock);
             continue;
@@ -197,4 +201,3 @@ void TcpServer::acceptLoop() {
 
     finished = true;
 }
-

@@ -1,5 +1,5 @@
-#ifndef SCS_CFG_HANDLERS_H
-#define SCS_CFG_HANDLERS_H
+#ifndef SCS_TELEMETRY_INC_SCS_CONFIG_HANDLERS_HPP_
+#define SCS_TELEMETRY_INC_SCS_CONFIG_HANDLERS_HPP_
 
 // SDK
 #include "scssdk_telemetry.h"
@@ -7,10 +7,10 @@
 #include "eurotrucks2/scssdk_telemetry_eut2.h"
 #include "scs-telemetry-common.hpp"
 
-typedef struct scsConfigHandler_s
-{
-	char const *id;
-	void (*handle) (const scs_named_value_t* current, const unsigned int trailer_id);
+typedef struct scsConfigHandler_s {
+    char const *id;
+    void(*handle)
+        (const scs_named_value_t* current, const unsigned int trailer_id);
 } scsConfigHandler_t;
 
 /*  define: scsConfigHandle
@@ -32,7 +32,7 @@ typedef struct scsConfigHandler_s
 scsConfigHandle(Substances, Id);
 
 // Controls
-scsConfigHandle(Controls,ShifterType);
+scsConfigHandle(Controls, ShifterType);
 
 // HShifter
 scsConfigHandle(HShifter, SelectorCount);
@@ -80,7 +80,7 @@ scsConfigHandle(Trailer, Id);
 scsConfigHandle(Trailer, CargoAccessoryId);
 scsConfigHandle(Trailer, HookPosition);
 scsConfigHandle(Trailer, WheelCount);
-scsConfigHandle(Trailer, WheelOffset); // it is named offsets in the comment but that attribute doesn't exist so i think it's handled over position, but need to check this
+scsConfigHandle(Trailer, WheelOffset);
 scsConfigHandle(Trailer, WheelSteerable);
 scsConfigHandle(Trailer, WheelSimulated);
 scsConfigHandle(Trailer, WheelRadius);
@@ -94,7 +94,6 @@ scsConfigHandle(Trailer, ChainType);
 scsConfigHandle(Trailer, LicensePlate);
 scsConfigHandle(Trailer, LicensePlateCountry);
 scsConfigHandle(Trailer, LicensePlateCountryId);
-
 
 // Job
 scsConfigHandle(Job, CargoId);
@@ -117,5 +116,8 @@ scsConfigHandle(Job, UnitCount);
 scsConfigHandle(Job, UnitMass);
 scsConfigHandle(Job, PlannedDistanceKm);
 
-bool handleCfg(const scs_named_value_t* info, configType type, unsigned int trailer_id);
-#endif
+bool handleCfg(
+    const scs_named_value_t* info,
+    configType type, unsigned int trailer_id
+);
+#endif  // SCS_TELEMETRY_INC_SCS_CONFIG_HANDLERS_HPP_

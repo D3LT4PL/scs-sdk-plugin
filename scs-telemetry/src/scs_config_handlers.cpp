@@ -29,7 +29,7 @@ const scsConfigHandler_t hshifter_config[] = {
 };
 
 // const: truck_config
-// all handles with config id `truck` 
+// all handles with config id `truck`
 const scsConfigHandler_t truck_config[] = {
         {SCS_TELEMETRY_CONFIG_ATTRIBUTE_brand_id, handleTruckBrandId},
         {SCS_TELEMETRY_CONFIG_ATTRIBUTE_brand, handleTruckBrand},
@@ -166,14 +166,14 @@ bool handleCfg(const scs_named_value_t* info, const configType type, const unsig
     default:
         return false;
     }
-    
-    for (auto index = 0; index < length_configs[type]; index++) {
+
+    for (auto index = 0; index < length_configs[type]; ++index) {
         if (strcmp(configs->id, info->name) == 0) {
             if (telemetryPtr) {
                 // Equal ID's; then handle this configuration
-                if (configs->handle)
-                    // TODO: FIND A BETTER WAY TO HANDLE THE TRAILER ID
+                if (configs->handle) {
                     configs->handle(info, trailer_id);
+                }
             }
             return true;
         }
@@ -334,7 +334,6 @@ scsConfigHandle(Truck, HookPosition) {
 }
 
 scsConfigHandle(Truck, WheelCount) {
-
     telemetryPtr->config_ui.truckWheelCount = current->value.value_u32.value;
 }
 
@@ -377,7 +376,6 @@ scsConfigHandle(Truck, WheelRadius) {
 }
 
 scsConfigHandle(Truck, WheelPowered) {
-
     const auto position = current->index;
     const auto ratio = current->value.value_bool;
 
@@ -489,7 +487,6 @@ scsConfigHandle(Trailer, WheelRadius) {
 }
 
 scsConfigHandle(Trailer, WheelPowered) {
-
     const auto position = current->index;
     const auto ratio = current->value.value_bool;
 
@@ -619,7 +616,7 @@ scsConfigHandle(Job, UnitMass) {
     telemetryPtr->config_f.unitMass = current->value.value_float.value;
 }
 
-scsConfigHandle(Job,PlannedDistanceKm) {
+scsConfigHandle(Job, PlannedDistanceKm) {
     telemetryPtr->config_ui.plannedDistanceKm = current->value.value_u32.value;
 }
 #pragma endregion All handler of the id job

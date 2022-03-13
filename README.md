@@ -1,19 +1,15 @@
-
-  <a href="https://rencloud.github.io/scs-sdk-plugin/docs/" title="Documentation">
-    <img alt="" src="https://img.shields.io/badge/documentation-09.08-green.svg?style=for-the-badge" />
-  </a>
-
-  <a href="https://discord.gg/JDqkZZd" title="Discord">
-    <img alt="" src="https://img.shields.io/badge/Discord-blue.svg?style=for-the-badge" />
-  </a>
-
-fork of [nlhans](https://github.com/nlhans/ets2-sdk-plugin) work
-
 # SCS Telemetry for EuroTruckSimulator 2 and AmericanTruckSimulator
 
 SCS has kindly released a SDK that allows developers and users to stream telemetry data from the game to any 3rd party applications. An example program was provided (and often used) which enabled streaming data by using text files stored on the users harddisk. This puts unnecessary stress on the users harddrive (not the mention the number of re-writes that would hurt SSDs), and moreover requires the user to manually configure the telemetry data source.
 
 This SDK plug-in transports the telemetry stream via a TCP socket. This allows for the plugin to be read from any virtually any device and allows the plugin to be cross-platform.
+
+---
+Feel free to join the discord server if you have any questions
+
+<a href="https://discord.gg/JDqkZZd" title="Discord">
+	<img alt="" src="https://img.shields.io/badge/Discord-blue.svg?style=for-the-badge" />
+</a>
 
 ## Installation
 
@@ -25,28 +21,39 @@ You will now notice that each time ETS2/ATS now starts it prompts the SDK has be
 
 ## Building
 
-### Linux:
+### Linux
 
 CMake, Make, GCC and G++ is required
 
 ```bash
-$ git clone https://github.com/RenCloud/scs-sdk-plugin.git
-$ cd scs-sdk-plugin/scs-telemetry
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
+git clone https://github.com/RenCloud/scs-sdk-plugin.git
+cd scs-sdk-plugin/scs-telemetry
+mkdir build
+cd build
+cmake ..
+make
 ```
 
-### Windows:
-`TODO`
+### Windows
+
+For windows existing different ways. I will later add more.
+
+#### Visual Studio
+
+- Open the project folder in Visual Studio.
+- It should recognize that there is an `CMakeLists.txt` and ask for `CMake` support in this workspace. Say yes.
+- After the project fully load you can right-click the `CMakeLists.txt` and select `build`.
 
 ## Developers Information
+
 ### Documentation (not completed at the moment)
 
 There is also a documentation. It tells a lot about the values. An installation, build, etc. guide will also follow. Should there still be questions, feature request or other changes visit the discord server linked at the top.
 
 Sadly the usage of the documentation generating syntax leads to a lot of `warnings`, while compiling the c# part. That's because the documentation use `<` and `>`. But that's no valid xml. Therefore the compiler cry's :cry: and give the warning about invalid xml. With the help of `#pragma` it wont show up.
+
+**Note**: Due to the big change the documentation is only exists in code. Additional documentation will follow later.
+If you need information you can look into the sdk-header-files or in the plugin source.
 
 ### Overview
 
@@ -61,26 +68,31 @@ Rev Numbers shows big changes on the shared memory and sometimes on the C# objec
 Lower SDK Version means there are less values / values that are zero. To get an overview which values that are look at the list at the middle of this document.
 Note to the SDK Version: SDK 1.13 is not the same like the sdk version of ETS2 or ATS. Both games have an own SDK version. See list under ATS.
 
+> Used Symbols for the table:
+> - Tested and works: :heavy_check_mark:
+> - Not tested, but most features should work: :ballot_box_with_check:
+> - No Support, on your own risk: :x:
+
 ### ETS2
 
-| Game Version    | SDK Version     | Plugin State                       |
-| --------------- | --------------- | ---------------------------------- |
-| 1.26 and before | 1.12 and before | Not Tested, could work with errors |
-| 1.27 - 1.34     | 1.13            | Should work                        |
-| 1.35            | 1.14            | Should work                        |
-| 1.36            | 1.15            | Should work                        |
-| - 1.40          | 1.16            | Should work                        |
-| 1.41            | 1.17            | Works, Test Version                |
+| Game Version | SDK Version | Plugin State               |
+| ------------ | ----------- | -------------------------- |
+|      - 1.26  | - 1.12      | :x:                     |
+| 1.27 - 1.34  | 1.13        | :ballot_box_with_check: |
+| 1.35         | 1.14        | :ballot_box_with_check: |
+| 1.36         | 1.15        | :ballot_box_with_check: |
+|      - 1.40  | 1.16        | :ballot_box_with_check: |
+| 1.41 - 1.43  | 1.17        | :heavy_check_mark:      |
 
 ### ATS
 
-| Game Version    | SDK Version | Plugin State        |
-| --------------- | ----------- | ------------------- |
-| 1.34 and before | 1.0         | Should work         |
-| 1.35            | 1.01        | Should work         |
-| 1.36            | 1.02        | Should work         |
-| - 1.40          | 1.03        | Should work         |
-| 1.41            | 1.04        | Works, Test Version |
+| Game Version | SDK Version | Plugin State               |
+| ------------ | ----------- | -------------------------- |
+|      - 1.34  | 1.0         | :ballot_box_with_check: |
+| 1.35         | 1.01        | :ballot_box_with_check: |
+| 1.36         | 1.02        | :ballot_box_with_check: |
+|      - 1.40  | 1.03        | :ballot_box_with_check: |
+| 1.41 - 1.43  | 1.04        | :heavy_check_mark:      |
 
 ### SDK VERSION AND GAME SDK VERSION
 
@@ -96,7 +108,6 @@ Note to the SDK Version: SDK 1.13 is not the same like the sdk version of ETS2 o
 | 1_12        | 1.16             | 1.03            |
 | 1_13        | 1.17             | 1.04            |
 
-
 ### Telemetry fields and the c# object
 
 The following telemetry fields are supported, structure is similar the C# object. Starting with sdk 1.10, game patch 1.35 and ETS2 1.14, ATS 1.01 code for some part of the need different versions of the sdk. The plugin handles this. If a game lower than 1.35 is used, only the values without (1.14/1.01) are possible:
@@ -108,8 +119,8 @@ New stuff is marked with the <ins>inserted</ins> Tag.
 
 <pre>
 
-<strong>Game Values (V.1.11)</strong>:
-│    ├── Telemetry Timestamp (<mark>not the in-game time</mark>, only for usage in code, see documentation for more information #todo add link) (<mark>now ulong</mark>)
+<strong>Game Values</strong>:
+│    ├── Telemetry Timestamp (<mark>not the in-game time</mark>, only for usage in code, see documentation for more information)
 │    ├── Simulation Timestamp
 │    ├── Render Timestamp
 │    ├── Paused, game state
@@ -166,10 +177,10 @@ New stuff is marked with the <ins>inserted</ins> Tag.
 │    │    ├── <strong>Current Values (Values that change a lot)</strong>:
 │    │    │    ├── Electric Enabled
 │    │    │    ├── Engine Enabled
-│    │    │    ├── <ins>LiftAxle</ins> (1.17/1.04/1.41)
-│    │    │    ├── <ins>LiftAxleIndicator</ins> (1.17/1.04/1.41)
-│    │    │    ├── <ins>TrailerLiftAxle</ins> (1.17/1.04/1.41)
-│    │    │    ├── <ins>TrailerLiftAxleIndicator</ins> (1.17/1.04/1.41)
+│    │    │    ├── LiftAxle (1.17/1.04/1.41)
+│    │    │    ├── LiftAxleIndicator (1.17/1.04/1.41)
+│    │    │    ├── TrailerLiftAxle (1.17/1.04/1.41)
+│    │    │    ├── TrailerLiftAxleIndicator (1.17/1.04/1.41)
 │    │    │    ├── <strong>Motor Values</strong>:
 │    │    │    │    ├── <strong>Gear Values</strong>:
 │    │    │    │    │    ├── HShifterSlot
@@ -228,7 +239,7 @@ New stuff is marked with the <ins>inserted</ins> Tag.
 │    │    │    │    ├── Beacon
 │    │    │    │    ├── Brake
 │    │    │    │    ├── Reverse
-│    │    │    │    └── <ins>HazardWarningLights</ins> (1.17/1.04/1.41)
+│    │    │    │    └── HazardWarningLights (1.17/1.04/1.41)
 │    │    │    ├── <strong>Wheels</strong>:
 │    │    │    │    ├── Substance
 │    │    │    │    ├── SuspDeflection
@@ -402,3 +413,7 @@ The fields are updated as fast as ETS2/ATS can and will do, as this is how the S
 ### Other
 
 For other languages you need to open a TCP connection to `localhost:45454`. The data format is binary and can be found in "scs-telemetry/inc/scs-telemetry-common.hpp".
+
+---
+
+This project is based on [nlhans](https://github.com/nlhans/ets2-sdk-plugin) work

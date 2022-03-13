@@ -27,7 +27,6 @@ const scsGameplayEventHandler_t delivered_gameplay[] = {
         {SCS_TELEMETRY_GAMEPLAY_EVENT_ATTRIBUTE_delivery_time, handleDeliveredDeliveryTime},
         {SCS_TELEMETRY_GAMEPLAY_EVENT_ATTRIBUTE_auto_park_used, handleDeliveredAutoparkUsed},
         {SCS_TELEMETRY_GAMEPLAY_EVENT_ATTRIBUTE_auto_load_used, handleDeliveredAutoloadUsed},
-
 };
 
 // const: fined_gameplay
@@ -103,8 +102,8 @@ bool handleGpe(const scs_named_value_t* info, const gameplayType type) {
         // something went wrong
         return false;
     }
-   
-    for (auto index = 0; index < length_gameplays[type]; index++) {
+
+    for (auto index = 0; index < length_gameplays[type]; ++index) {
         if (strcmp(gameplay->id, info->name) == 0) {
             if (telemetryPtr) {
                 // Equal ID's; then handle this configuration
@@ -128,7 +127,6 @@ scsGameplayEventHandle(Cancelled, Penalty) {
 }
 
 #pragma endregion All handler of the id job.cancelled
-
 
 #pragma region handleDelivered
 // Events called when job is delivered.

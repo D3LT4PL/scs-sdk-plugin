@@ -1,13 +1,13 @@
-#ifndef SCS_TELEMETRY_TCP_SERVER_HPP
-#define SCS_TELEMETRY_TCP_SERVER_HPP
-
-#include <set>
-#include <cstdio>
-#include <iostream>
-#include <thread>
-#include <string>
+#ifndef SCS_TELEMETRY_INC_TCP_SERVER_HPP_
+#define SCS_TELEMETRY_INC_TCP_SERVER_HPP_
 
 #include <scssdk.h>
+
+#include <cstdio>
+#include <iostream>
+#include <set>
+#include <string>
+#include <thread>
 
 #include "log.hpp"
 
@@ -22,15 +22,15 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
-#include <cerrno>
 #include <unistd.h>
+#include <cerrno>
 
 #endif
 
 #define PORT 45454
 
 class TcpServer {
-public:
+ public:
 #ifdef WIN32
     std::set<SOCKET> *clients = nullptr;
     SOCKET srv = INVALID_SOCKET;
@@ -41,16 +41,16 @@ public:
     bool finish = false;
     bool finished = false;
 
-public:
+ public:
     explicit TcpServer(Log *loggerImpl);
     ~TcpServer();
 
     bool init();
     void broadcast(const char *data, int dataSize) const;
 
-private:
+ private:
     void acceptLoop();
     Log *logger;
 };
 
-#endif //SCS_TELEMETRY_TCP_SERVER_HPP
+#endif  // SCS_TELEMETRY_INC_TCP_SERVER_HPP_

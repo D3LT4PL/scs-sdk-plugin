@@ -1,14 +1,14 @@
-#pragma once
+#ifndef SCS_TELEMETRY_INC_LOG_HPP_
+#define SCS_TELEMETRY_INC_LOG_HPP_
 
-#include <string>
 #include <scssdk.h>
 
+#include <string>
 #include <system_error>
 #include <cstdarg>
 
 class Log {
-
-public:
+ public:
     explicit Log(scs_log_t gameLog) : logger(gameLog), isDebug(false) { }
 
     void info(const std::string &msg) {
@@ -20,13 +20,15 @@ public:
     }
 
     void debug(const std::string &msg) {
-        if (isDebug)
+        if (isDebug) {
             info(msg);
+        }
     }
 
     void debug(const std::string &msg, const int errorCode) {
-        if (isDebug)
+        if (isDebug) {
             info(msg, errorCode);
+        }
     }
 
     void warn(const std::string &msg) {
@@ -52,8 +54,8 @@ public:
     static std::string format(const char *const text, ...) {
         char formatted[1000];
 
-        va_list args;
-                va_start(args, text);
+        std::va_list args;
+        va_start(args, text);
 
 #ifdef WIN32
         vsnprintf_s(formatted, sizeof(formatted), _TRUNCATE, text, args);
@@ -62,17 +64,20 @@ public:
 #endif
 
         formatted[sizeof(formatted) - 1] = 0;
-                va_end(args);
+        va_end(args);
 
         return {formatted};
     }
 
-private:
+ private:
     const char *tag = "TelemetryPlugin";
     bool isDebug;
     scs_log_t logger{};
 
-    static std::string getCodeDescriptor(const std::string &prefix, const int errorCode) {
+    static std::string getCodeDescriptor(
+        const std::string &prefix,
+        const int errorCode
+    ) {
         auto result = prefix;
         result.append(" - (");
         result.append(std::to_string(errorCode));
@@ -91,3 +96,5 @@ private:
         logger(logType, result.c_str());
     }
 };
+
+#endif  // SCS_TELEMETRY_INC_LOG_HPP_
